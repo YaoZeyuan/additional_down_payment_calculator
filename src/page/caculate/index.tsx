@@ -156,7 +156,7 @@ export default () => {
   };
 
   return (
-    <div>
+    <div className="caculate-container">
       <Row gutter={16}>
         <Col span={8}>
           <Card title="配置" bordered={false}>
@@ -184,7 +184,7 @@ export default () => {
                 </Form.Item>
                 万元
               </Form.Item>
-              <Form.Item label="预计补交的首付金额">
+              <Form.Item label="预计追加的首付金额">
                 <Form.Item
                   rules={[
                     {
@@ -226,14 +226,14 @@ export default () => {
                 </Form.Item>
                 万元
               </Form.Item>
-              <Form.Item label="公积金贷款金额">
-                <Form.Item noStyle name="loan_公积金贷款金额_万元">
+              <Form.Item label="预期每年投资收益率">
+                <Form.Item noStyle name="rate_预期每年投资收益率_数字_百分数">
                   <InputNumber></InputNumber>
                 </Form.Item>
-                万元
+                %
               </Form.Item>
-              <Form.Item label="商贷贷款金额">
-                <Form.Item noStyle name="loan_商贷贷款金额_万元">
+              <Form.Item label="公积金贷款金额">
+                <Form.Item noStyle name="loan_公积金贷款金额_万元">
                   <InputNumber></InputNumber>
                 </Form.Item>
                 万元
@@ -244,23 +244,23 @@ export default () => {
                 </Form.Item>
                 %
               </Form.Item>
-              <Form.Item label="商贷利率">
-                <Form.Item noStyle name="rate_商贷利率_数字_百分数">
-                  <InputNumber></InputNumber>
-                </Form.Item>
-                %
-              </Form.Item>
-              <Form.Item label="预期每年投资收益率">
-                <Form.Item noStyle name="rate_预期每年投资收益率_数字_百分数">
-                  <InputNumber></InputNumber>
-                </Form.Item>
-                %
-              </Form.Item>
               <Form.Item label="公积金贷款年份">
                 <Form.Item noStyle name="year_公积金贷款年份">
                   <InputNumber></InputNumber>
                 </Form.Item>
                 年
+              </Form.Item>
+              <Form.Item label="商贷贷款金额">
+                <Form.Item noStyle name="loan_商贷贷款金额_万元">
+                  <InputNumber></InputNumber>
+                </Form.Item>
+                万元
+              </Form.Item>
+              <Form.Item label="商贷利率">
+                <Form.Item noStyle name="rate_商贷利率_数字_百分数">
+                  <InputNumber></InputNumber>
+                </Form.Item>
+                %
               </Form.Item>
               <Form.Item label="商贷贷款年份">
                 <Form.Item noStyle name="year_商贷贷款年份">
@@ -277,7 +277,23 @@ export default () => {
           </Card>
         </Col>
         <Col span={8}>
-          <Card title="汇总结果" bordered={false}>
+          <Card
+            title="汇总结果"
+            bordered={false}
+            actions={[
+              <Button
+                type="primary"
+                onClick={() => {
+                  window.scrollTo({
+                    top: document.body.clientHeight,
+                    behavior: "smooth",
+                  });
+                }}
+              >
+                查看详情
+              </Button>,
+            ]}
+          >
             <pre className="pre-result">{JSON.stringify(summary, null, 2)}</pre>
           </Card>
         </Col>
@@ -286,11 +302,15 @@ export default () => {
             <pre className="pre-result">
               {`计算方案解释:
 
-假设交完首付后, 我们剩余 a 万元现金, 背负 b 万元存款, 还款 c 年, 利率 d, 期间每月收入 e 万元, 买房剩余现金+缴纳月供后剩余现金每年年底全部拿去买理财, 理财年收益 f,
+对于房贷而言, 是否补交首付, 补交多少首付是非常复杂的问题, 涉及到至少十年跨度, 8 个变量, 以及复杂的家庭决策背景因素. 因此**不存在简单的确定性回答**
 
-需要考虑的问题为: 是否要补交首付, 以求完成所有还款后, 剩余总资金最多.
+这个问题涉及到的抽象描述如下:
 
-这里列数学公式并不直观, 贷款年份对最终结果也有明显影响(理财收益是复利模式, 年限越长影响越大), 所以我们选择暴力计算每一种参数对应的实际还款过程&最终结果, 方便观察结论
+假设交完首付后, 我们剩余 a 万元现金, 背负 b 万元存款, 利率为 c, 还款 d 年, 每月还款 e 元(等额本息)或 f 元(等额本金), 期间每月收入 g 万元, 买房剩余现金+缴纳月供后剩余现金每年年底全部拿去买理财, 理财年年华收益率 h,
+
+需要考虑的问题为: 是否要补交 i 元首付, 以降低每月 j 元月供, 从而每月增加 k 元储蓄, 以求在还款完成后, 我们剩余总资金 l 最多.
+
+这里使用数学公式计算并不直观, 各个变量间也会互相影响, 所以我们选择暴力计算的方式, 根据设定参数计算实际还款过程和最终结果, 从而建立\`f(初始参数) => 家庭最终总财富\`的对应关系, 方便大家根据实际情况进行测算
 
 为计算方便, 在接下来的计算中, 我们假定
 
@@ -311,13 +331,13 @@ export default () => {
 
 **注意:**
 
-该模型为理论运算结果, 仅供参考, 不构成任何房贷方案设计推荐
-
 在实际应用中, 除了最终收益率, 至少还需要考虑以下因素
 
-1.  **投资收益率并不稳定**, 个别年份可能为负(炒股), 甚至全亏(中行原油宝, 亏成负数)
-2.  长时间范围内家庭对大额现金的需求几乎是确定时间(结婚/生子/疾病/教育/...)
-3.  长时间范围内收入变动几乎是确定时间(行业整治:互联网金融/在线培训/年满 35/...)`}
+1.  **投资收益率并不稳定**, 个别年份可能为负(炒股), 甚至全亏(中行原油宝, 亏成负数), 即使是国债利率也可能变成负值(德国/日本)
+2.  长时间范围内家庭对大额现金的需求几乎是确定事件(结婚/生子/疾病/教育/...)
+3.  长时间范围内收入变动几乎是确定事件(行业整治/经济危机/科技革命/...)
+
+因此, 该模型仅为理论运算结果, 仅供参考, 不构成任何房贷方案设计推荐`}
             </pre>
           </Card>
         </Col>

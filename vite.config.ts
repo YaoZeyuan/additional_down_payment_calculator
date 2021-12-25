@@ -4,7 +4,7 @@ import path from 'path'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: "https://cdn.jsdelivr.net/gh/YaoZeyuan/loan_calculator@master/docs/",
+  base: "https://cdn.jsdelivr.net/gh/YaoZeyuan/additional_down_payment_calculator@master/docs/",
   plugins: [react()],
   build: {
     "outDir": "docs",
