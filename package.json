@@ -5,6 +5,7 @@
     "dev": "vite",
     "start": "npm run dev",
     "build": "tsc && vite build",
+    "deploy": "npm run build && ",
     "preview": "vite preview"
   },
   "dependencies": {
