@@ -6,6 +6,9 @@ import path from 'path'
 export default defineConfig({
   base: "https://cdn.jsdelivr.net/gh/YaoZeyuan/loan_calculator@master/dist/",
   plugins: [react()],
+  build: {
+    "outDir": "docs",
+  },
   resolve: {
     alias: [
       {
