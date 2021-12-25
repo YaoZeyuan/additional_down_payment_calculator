@@ -5,8 +5,7 @@
     "dev": "vite",
     "start": "npm run dev",
     "build": "tsc && vite build",
-    "deploy": "npm run build && git add * && git commit -m 'auto deploy' && git push",
-    "test": "git add . && git commit -m 'auto deploy' && git push",
+    "deploy": "npm run build && git add . && git commit -m 'auto deploy' && git push",
     "preview": "vite preview"
   },
   "dependencies": {
