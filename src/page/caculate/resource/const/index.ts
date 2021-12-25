@@ -29,7 +29,9 @@ export const Const_Default_Summary: Types.Type_Summary = {
     totalPrice_还款总额: 0,
     loan_总贷款额: 0,
     year_年份: 0,
-    cash_最终持有现金资产数_元: 0
+    cash_最终持有现金资产数_元: 0,
+    loan_最终实际发生_商贷贷款金额_元: 0,
+    loan_最终实际发生_公积金贷款金额_元: 0,
 }
 
 export const Const_Default_月度数据: Types.Type_按月数据 = {

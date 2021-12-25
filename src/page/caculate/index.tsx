@@ -46,17 +46,18 @@ export default () => {
     let loan_最终实际发生_公积金贷款金额_元 =
       config.loan_公积金贷款金额_万元 * Consts.Const_万元;
     if (cash_提前还款金额_元 > loan_最终实际发生_商贷贷款金额_元) {
-      loan_最终实际发生_商贷贷款金额_元 = 0;
       cash_提前还款金额_元 =
         cash_提前还款金额_元 - loan_最终实际发生_商贷贷款金额_元;
+      loan_最终实际发生_商贷贷款金额_元 = 0;
     } else {
-      cash_提前还款金额_元 = 0;
       loan_最终实际发生_商贷贷款金额_元 =
         loan_最终实际发生_商贷贷款金额_元 - cash_提前还款金额_元;
+      cash_提前还款金额_元 = 0;
     }
     if (cash_提前还款金额_元 > 0) {
       loan_最终实际发生_公积金贷款金额_元 =
         loan_最终实际发生_公积金贷款金额_元 - cash_提前还款金额_元;
+      cash_提前还款金额_元 = 0;
     }
 
     let loanResult = CaculateInst.cacl_组合贷({
@@ -132,6 +133,8 @@ export default () => {
       totalPrice_还款总额: loanResult.totalPrice_还款总额,
       loan_总贷款额: loanResult.loan_总贷款额,
       year_年份: loanResult.year_年份,
+      loan_最终实际发生_商贷贷款金额_元,
+      loan_最终实际发生_公积金贷款金额_元,
       cash_最终持有现金资产数_元:
         lastCycleItem.cash_当年理财中资产 +
         lastCycleItem.cash_当年剩余待投资理财现金,
@@ -182,11 +185,13 @@ export default () => {
                       validator: async () => {
                         let config = form.getFieldsValue();
                         let checker_补交首付款不能高于总存款 =
-                          config.cash_当前存款_万元 >
+                          config.cash_当前存款_万元 >=
                           config.extend_pay_count_预计补交的首付金额_万元;
-                        let checker_补交首付款不能高于总贷款 =
+                        let loan_总贷款数 =
                           config.loan_公积金贷款金额_万元 +
-                            config.loan_商贷贷款金额_万元 >
+                          config.loan_商贷贷款金额_万元;
+                        let checker_补交首付款不能高于总贷款 =
+                          loan_总贷款数 >=
                           config.extend_pay_count_预计补交的首付金额_万元;
                         if (checker_补交首付款不能高于总存款 === false) {
                           return new Promise((reslove, reject) => {
