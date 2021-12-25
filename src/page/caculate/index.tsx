@@ -74,13 +74,19 @@ export default () => {
     let month_按月计算: Types.Type_按月数据[] = [];
 
     let cash_当前已投入理财金额_元 =
-      config.cash_当前存款_万元 * Consts.Const_万元;
+      (config.cash_当前存款_万元 -
+        config.extend_pay_count_预计补交的首付金额_万元) *
+      Consts.Const_万元;
     let cash_当年剩余资金 = 0;
     let cash_每月收入_元 = config.income_月收入_万元 * Consts.Const_万元;
     let rate_年化理财收益率 =
       config.rate_预期每年投资收益率_数字_百分数 * Consts.Const_百分比;
     for (let item_贷款还款数据 of raw_month_按月结果) {
-      if (item_贷款还款数据.month_总月份 % 12 === 1) {
+      // 第一个月没有理财收益
+      if (
+        item_贷款还款数据.month_总月份 % 12 === 1 &&
+        item_贷款还款数据.month_总月份 !== 1
+      ) {
         // 一年的开始
         // 理财本金变为: 理财本金 * (1 + 理财收益%)
         // 将去年所有剩余资金加入已投资理财金额
